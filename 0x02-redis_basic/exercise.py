@@ -7,6 +7,28 @@ from typing import Union, Callable, Optional, Any
 from functools import wraps
 
 
+
+
+
+class Cache:
+    def __init__(self):
+        """Initialize Redis client and flush the DB"""
+        self._redis = redis.Redis()
+        self._redis.flushdb()
+
+    def store(self, data: Union[str, bytes, int, float]) -> str:
+        """
+        Store the data in Redis with a generated UUID key
+        Args:
+            data: str, bytes, int, or float
+        Returns:
+            The key under which the data is stored
+        """
+        key = str(uuid.uuid4())
+        self._redis.set(key, data)
+        return key
+
+
 def count_calls(method: Callable) -> Callable:
     """Decorator to count how many times a method is called"""
     @wraps(method)
